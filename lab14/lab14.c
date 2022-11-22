@@ -119,7 +119,6 @@ int main(int argc, char* argv[]){
             k++;
         }
 	}
-    printf("\n");
     int byteCounter;
     for (int iter = 0; iter < max_iter; iter++){
         GameOfLife(data, image.width, image.height);

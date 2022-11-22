@@ -217,7 +217,8 @@ void set(unsigned char *fileName, unsigned char *frameName, unsigned char *value
         remove("temp2.mp3");
     }
     else {
-        rename("temp2.mp3", "new.mp3");
+        remove(fileName);
+        rename("temp2.mp3", fileName);
     }
 }
 
