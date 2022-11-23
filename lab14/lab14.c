@@ -103,7 +103,7 @@ int main(int argc, char* argv[]){
     for (i = 0; i < image.height; i++){
         data[i] = (int*)malloc(image.width * sizeof(int));
     }
-
+    int padding_size = (image.width * 3) % 4;
     int k = 0;
     for (i = image.height - 1; i >= 0; i--) {
 		for (j = 0; j < image.width; j++) {
@@ -115,7 +115,7 @@ int main(int argc, char* argv[]){
             }
 			k += 3;
 		}
-        for (padding = 0; padding < (image.width * 3) % 4; padding++){
+        for (padding = 0; padding < padding_size; padding++){ // padding at the end of each line
             k++;
         }
 	}
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]){
                     byteCounter++;
                 } 
             }
-            for (padding = 0; padding < (image.width * 3) % 4; padding++){
+            for (padding = 0; padding < padding_size; padding++){
                 original[byteCounter] = 0; 
                 byteCounter++;
             }
