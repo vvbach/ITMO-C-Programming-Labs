@@ -9,12 +9,17 @@ typedef struct Triangle {
     Point p1;
     Point p2;
     Point p3;
+    double e1, e2, e3;
     double area;
     double perimeter;
 } Triangle;
 
-double Area(Triangle t);
+void Length(Triangle *t);
 
-double Perimeter(Triangle t);
+void Area(Triangle *t);
+
+void Perimeter(Triangle *t);
+
+
 
 #endif

@@ -1,11 +1,20 @@
 #include <stdio.h>
+#include <time.h>
+#include <string.h>
 
-int main(){
-    FILE *f = fopen("lab12.txt", "w");
-    char *day[10] = {"01/11/2022", "02/11/2022", "03/11/2022", "04/11/2022", "05/11/2022", "06/11/2022", "07/11/2022", "08/11/2022",
-     "09/11/2022", "10/11/2022", };
+int main(int argc, char* argv[]){
+    unsigned char *fileName;
+    strcpy(fileName, argv[1]);
+    FILE *f = fopen(fileName, "w");
+
+    time_t rtime;
+
+    time(&rtime);
+    
     for (int i = 0; i < 10; i++){
-        fprintf(f, "%s\n", day[i]);
+        fprintf(f, "%s\n", asctime(localtime(&rtime)));
+        rtime += 86400;
     }
+    fclose(f);
     return 0;
 }

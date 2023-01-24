@@ -41,11 +41,6 @@ void GameOfLife(int **currentGen , int width, int height){
     int x, y;
     for (y = 0; y < height; y++){
         for (x = 0; x < width; x++){
-            nextGen[y][x] = currentGen[y][x];
-        }
-    }
-    for (y = 0; y < height; y++){
-        for (x = 0; x < width; x++){
             if (Live(currentGen, x, y, width, height)){
                 nextGen[y][x] = 1;
             }
@@ -90,15 +85,24 @@ int main(int argc, char* argv[]){
     }
 
     FILE *f = fopen(inputFile, "rb");
+    if (f == NULL){
+        printf("File not found !");
+        return 0;
+    }
     unsigned char header[54];
     fread(header, 54, 1, f);
     image.size = header[2] + (header[3] << 8) + (header[4] << 16) + (header[5] << 24);
     image.width = header[18] + (header[19] << 8) + (header[20] << 16) + (header[21] << 24);
     image.height = header[22] + (header[23] << 8) + (header[24] << 16) + (header[25] << 24);
-    
-    unsigned char* original = (unsigned char*)malloc((image.size - 54) * sizeof(unsigned char));
+    int starting_offset = header[10] + (header[11] << 8) + (header[12] << 16) + (header[13] << 24);
+    header[10] = 0x36;
+    header[11] = 0;
+    header[12] = 0;
+    header[13] = 0;
+    unsigned char* original = (unsigned char*)malloc((image.size - starting_offset) * sizeof(unsigned char));
+    fseek(f, starting_offset, SEEK_SET);
 	fread(original, sizeof(unsigned char), image.size, f);
-
+    
     int **data = (int**)malloc(image.height * sizeof(int*));
     for (i = 0; i < image.height; i++){
         data[i] = (int*)malloc(image.width * sizeof(int));

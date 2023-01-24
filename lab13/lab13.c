@@ -44,6 +44,10 @@ int checkFrameID(char *frameID){
 
 void show(unsigned char *fileName){
     FILE *f = fopen(fileName, "rb");
+    if (f == NULL) {
+        printf("File not found !");
+        return;
+    }
     Header tagHeader;
     fseek(f, 0, SEEK_SET);
     fread(&tagHeader, sizeof(Header), 1, f);
@@ -83,6 +87,10 @@ void show(unsigned char *fileName){
 
 void get(unsigned char *fileName, unsigned char *frameName){
     FILE *f = fopen(fileName, "rb");
+    if (f == NULL) {
+        printf("File not found !");
+        return;
+    }
     Header tagHeader;
     fseek(f, 0, SEEK_SET);
     fread(&tagHeader, sizeof(Header), 1, f);
@@ -94,6 +102,7 @@ void get(unsigned char *fileName, unsigned char *frameName){
     unsigned int tagSize = hexToDecimal(tagHeader.size);
 
     int counter = 0;
+    int frameFound = 0;
 
     while (counter < tagSize)
     {
@@ -109,6 +118,7 @@ void get(unsigned char *fileName, unsigned char *frameName){
         // read data of the frame
         counter += frameSize;
         if(strcmp(frameHeader.frameID, frameName) == 0){
+            frameFound = 1;
             printf("%s      ", frameHeader.frameID);
             while(frameSize){
                 char c = fgetc(f);
@@ -126,15 +136,18 @@ void get(unsigned char *fileName, unsigned char *frameName){
             }
         }
     }
+    if (!frameFound) printf("Frame not found !");
     fclose(f);
 }
 
 void set(unsigned char *fileName, unsigned char *frameName, unsigned char *value){
     FILE *f = fopen(fileName, "rb");
+    if (f == NULL) {
+        printf("File not found !");
+        return;
+    }
     FILE *temp = fopen("temp.mp3", "w+b");
     FILE *temp2 = fopen("temp2.mp3", "w+b");
-
-    int frameFound = 0;
 
     Header tagHeader;
     fseek(f, 0, SEEK_SET);
@@ -147,6 +160,7 @@ void set(unsigned char *fileName, unsigned char *frameName, unsigned char *value
     unsigned int tagSize = hexToDecimal(tagHeader.size);
 
     int counter = 0;
+    int frameFound = 0;
 
     while (counter < tagSize)
     {
@@ -185,7 +199,7 @@ void set(unsigned char *fileName, unsigned char *frameName, unsigned char *value
             fseek(f, 0, SEEK_SET); // return to begin of the file and copy until reach the frame, this temp2 will be renamed as the new original file
             int p = 0;
             unsigned int frSize2 = frameSize;
-            while (p < counter + 10 - 10 - frSize2){
+            while (p < counter + 10 - 10 - frSize2 + ((tagHeader.flag >> 6) ? 6 : 0)){ // counter + 10 = size of tag header (10) + number of bytes have been read in "counter"
                 char c = fgetc(f);
                 fputc(c, temp2);
                 p++;
@@ -214,6 +228,7 @@ void set(unsigned char *fileName, unsigned char *frameName, unsigned char *value
     
     remove("temp.mp3");
     if (!frameFound){
+        printf("Frame not found !");
         remove("temp2.mp3");
     }
     else {
